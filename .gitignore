@@ -1,0 +1,5 @@
+# PHPUnit cache
+.phpunit.cache
+
+# Config
+tests-config.php
