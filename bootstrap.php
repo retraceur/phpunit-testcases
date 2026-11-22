@@ -17,6 +17,7 @@ if ( PHP_VERSION_ID < 80300 ) {
 }
 
 define( 'RETRACEUR_TESTS_DIR', __DIR__ );
+define( 'DIR_TESTDATA', RETRACEUR_TESTS_DIR . '/data' );
 
 $retraceur_config_file = getenv( 'RETRACEUR_TESTS_CONFIG' ) ?: __DIR__ . '/tests-config.php';
 
