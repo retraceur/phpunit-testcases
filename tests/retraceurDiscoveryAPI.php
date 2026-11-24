@@ -485,6 +485,25 @@ final class retraceurDiscoveryAPI extends TestCase {
 				array(),
 				'',
 			),
+			'theme explicit header'     => array(
+				array( 'GitHubThemeURI' => 'https://github.com/owner/theme' ),
+				'owner/theme',
+			),
+			'theme uri on github'       => array(
+				array( 'ThemeURI' => 'https://github.com/owner/theme' ),
+				'owner/theme',
+			),
+			'theme uri somewhere else'  => array(
+				array( 'ThemeURI' => 'https://example.org/theme' ),
+				'',
+			),
+			'theme explicit header first' => array(
+				array(
+					'GitHubThemeURI' => 'https://github.com/owner/theme',
+					'ThemeURI'       => 'https://github.com/other/thing',
+				),
+				'owner/theme',
+			),
 		);
 	}
 
