@@ -2,7 +2,13 @@
 use PHPUnit\Framework\Attributes\DataProvider;
 use Retraceur\Tests\TestCase;
 
+/**
+ * @group discovery
+ */
 final class retraceurDiscoveryAPI extends TestCase {
+
+	protected $theme_root;
+	protected $orig_theme_dir;
 
 	public static function setUpBeforeClass():void {
 		parent::setUpBeforeClass();
@@ -13,7 +19,24 @@ final class retraceurDiscoveryAPI extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		$this->theme_root     = DIR_TESTDATA . '/discovery-themes';
+		$this->orig_theme_dir = $GLOBALS['wp_theme_directories'];
+
+		$GLOBALS['wp_theme_directories'] = array( WP_CONTENT_DIR . '/themes', $this->theme_root );
+
+		wp_clean_themes_cache();
+		unset( $GLOBALS['wp_themes'] );
+
 		delete_transient( 'retraceur_discovery_installed_map' );
+	}
+
+	public function tearDown(): void {
+		$GLOBALS['wp_theme_directories'] = $this->orig_theme_dir;
+
+		wp_clean_themes_cache();
+		unset( $GLOBALS['wp_themes'] );
+
+		parent::tearDown();
 	}
 
 	/**
@@ -635,5 +658,29 @@ final class retraceurDiscoveryAPI extends TestCase {
 	 */
 	public function test_flush_installed_map_is_hooked_to_the_upgrader() {
 		$this->assertNotFalse( has_action( 'upgrader_process_complete', 'retraceur_discovery_flush_installed_map' ) );
+	}
+
+	/**
+	 * @covers ::retraceur_discovery_get_installed_items
+	 * @covers ::retraceur_get_themes_data
+	 */
+	public function test_installed_items_of_themes_expose_the_github_headers() {
+		$items = retraceur_get_themes_data();
+
+		$this->assertSame( 'https://github.com/owner/github-theme', $items['github-theme']['GitHubThemeURI'] );
+		$this->assertSame( '', $items['plain-theme']['GitHubThemeURI'] );
+		$this->assertSame( 'https://github.com/owner/plain-theme', $items['plain-theme']['ThemeURI'] );
+	}
+
+	/**
+	 * @covers ::retraceur_discovery_get_installed_map
+	 * @covers ::retraceur_get_themes_data
+	 */
+	public function test_installed_map_of_themes() {
+		$map = retraceur_discovery_get_installed_map( retraceur_get_themes_data(), 'themes' );
+
+		$this->assertSame( 'github-theme', $map['owner/github-theme'] );
+		$this->assertSame( 'plain-theme', $map['owner/plain-theme'] );
+		$this->assertArrayNotHasKey( 'owner/unsafe-theme', $map );
 	}
 }
