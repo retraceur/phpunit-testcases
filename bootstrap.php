@@ -5,6 +5,10 @@
  * Loads the tests configuration, then the core, then the base test case.
  * Targets PHPUnit 12 (PHP 8.3+). No Composer, no Yoast polyfills.
  *
+ * The configuration file is, in order: the RETRACEUR_TESTS_CONFIG constant (set by
+ * phpunit-playground.xml.dist), the RETRACEUR_TESTS_CONFIG environment variable, or
+ * tests-config.php next to this file.
+ *
  * Run `npm run phpunit:install-db` in coeur once to install Retraceur in the
  * (disposable) tests database before running the tests.
  */
@@ -19,7 +23,11 @@ if ( PHP_VERSION_ID < 80300 ) {
 define( 'RETRACEUR_TESTS_DIR', __DIR__ );
 define( 'DIR_TESTDATA', RETRACEUR_TESTS_DIR . '/data' );
 
-$retraceur_config_file = getenv( 'RETRACEUR_TESTS_CONFIG' ) ?: __DIR__ . '/tests-config.php';
+if ( defined( 'RETRACEUR_TESTS_CONFIG' ) ) {
+	$retraceur_config_file = RETRACEUR_TESTS_CONFIG;
+} else {
+	$retraceur_config_file = getenv( 'RETRACEUR_TESTS_CONFIG' ) ?: __DIR__ . '/tests-config.php';
+}
 
 if ( ! is_readable( $retraceur_config_file ) ) {
 	fwrite( STDERR, "Tests config not found: {$retraceur_config_file}\nCopy tests-config-sample.php to tests-config.php and edit it.\n" );

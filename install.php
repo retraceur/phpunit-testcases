@@ -2,7 +2,8 @@
 /**
  * Installs Retraceur in the tests database.
  *
- * Drops every table that uses the tests prefix, then runs a fresh installation.
+ * Drops every table that uses the tests prefix (unless the config says the database is
+ * brand new with RETRACEUR_TESTS_FRESH_DB), then runs a fresh installation.
  * Run it through `npm run phpunit:install-db` in coeur.
  */
 
@@ -16,12 +17,14 @@ require_once rtrim( ABSPATH, '/\\' ) . '/wp-admin/includes/upgrade.php';
 
 global $wpdb;
 
-$retraceur_tables = $wpdb->get_col(
-	$wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix ) . '%' )
-);
+if ( ! defined( 'RETRACEUR_TESTS_FRESH_DB' ) || true !== RETRACEUR_TESTS_FRESH_DB ) {
+	$retraceur_tables = $wpdb->get_col(
+		$wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix ) . '%' )
+	);
 
-foreach ( $retraceur_tables as $retraceur_table ) {
-	$wpdb->query( "DROP TABLE IF EXISTS `{$retraceur_table}`" );
+	foreach ( $retraceur_tables as $retraceur_table ) {
+		$wpdb->query( "DROP TABLE IF EXISTS `{$retraceur_table}`" );
+	}
 }
 
 wp_install( 'Retraceur tests', 'admin', 'admin@example.org', true, '', 'password' );

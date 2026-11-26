@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.0/phpunit.xsd"
+	bootstrap="bootstrap.php"
+	cacheDirectory=".phpunit.cache"
+	colors="true"
+	failOnWarning="true"
+	failOnRisky="true"
+	beStrictAboutOutputDuringTests="true"
+>
+	<php>
+		<!-- Selects the Playground config instead of the local tests-config.php. -->
+		<const name="RETRACEUR_TESTS_CONFIG" value="/wordpress/phpunit-testcases/tests-config-playground.php"/>
+	</php>
+	<testsuites>
+		<testsuite name="retraceur">
+			<directory suffix=".php">tests</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>
